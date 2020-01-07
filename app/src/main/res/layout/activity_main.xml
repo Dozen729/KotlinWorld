@@ -4,18 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btn_demo"
+    <com.dozen.world.custom.RoundView
+        android:id="@+id/round_test"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#000"
-        android:textSize="20sp"
-        android:textAlignment="center"
-        android:text="Kotlin Demo"
+        android:layout_height="match_parent"
+        app:background="@mipmap/ic_launcher"
+        app:titleColor="#000"
+        app:titleName="hello kotlin"
+        app:titleSize="30sp"
         />
-
 
 </LinearLayout>

@@ -1,0 +1,8 @@
+<resources>
+    <declare-styleable name="RoundView">
+        <attr name="titleName" format="string" />
+        <attr name="titleSize" format="dimension" />
+        <attr name="titleColor" format="color" />
+        <attr name="roundBackground" format="color|reference" />
+    </declare-styleable>
+</resources>
