@@ -13,12 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".face.MessageActivity">
-            <intent-filter>
-                <action android:name="MESSAGE_DEMO"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
         <activity android:name=".MainActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             >
@@ -28,6 +22,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".face.MessageActivity"/>
+        <activity android:name=".face.SharesActivity"/>
+
+
     </application>
 
 </manifest>

@@ -18,6 +18,7 @@ class Constant {
             tipList.add(NameTip.KOTLIN.name)
             tipList.add(NameTip.TEST.name)
             tipList.add(NameTip.TEST2.name)
+            tipList.add(NameTip.SHARES.name)
 
             //扇形大小均分
             val size = 1f
@@ -33,6 +34,17 @@ class Constant {
                             Color.BLUE,
                             "com.dozen.world.face.MessageActivity",
                             "使用Kotlin语言实现ListView显示网络图片和文字"
+                        )
+                        dataList.add(item)
+                    }
+                    NameTip.SHARES.name -> {
+                        val item = RoundItem(
+                            i,
+                            NameTip.SHARES.name,
+                            size,
+                            Color.GREEN,
+                            "com.dozen.world.face.SharesActivity",
+                            "股票测试"
                         )
                         dataList.add(item)
                     }

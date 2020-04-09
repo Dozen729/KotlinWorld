@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.dozen.world.custom.TopTabView
+        android:id="@+id/shares_top"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="vertical"
+        app:menuTextSize="15dp"
+        app:tabWidth="220dp"
+        app:menuSelectIcon="@drawable/menu_select"
+        app:menuUnSelectIcon="@drawable/menu_un_select" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/shares_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+</LinearLayout>
