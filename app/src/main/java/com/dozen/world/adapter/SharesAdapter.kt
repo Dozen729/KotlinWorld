@@ -19,7 +19,8 @@ import com.kevin.delegationadapter.AdapterDelegate
  *
  *
  */
-class SharesAdapter(var context:Context) : AdapterDelegate<TopTabItem, SharesAdapter.ViewHolder>() {
+class SharesAdapter(var context:Context,var listener: SharesItemListener) : AdapterDelegate<TopTabItem, SharesAdapter.ViewHolder>() {
+
 
 
 
@@ -28,21 +29,30 @@ class SharesAdapter(var context:Context) : AdapterDelegate<TopTabItem, SharesAda
 
         Glide.with(context).load("http://image.sinajs.cn/newchart/monthly/n/${item.location}${item.code}.gif").into(holder.picture)
 
-        if(item.optional) holder.optional.setBackgroundResource(R.drawable.shares_un_optional) else holder.optional.setBackgroundResource(R.drawable.shares_optional)
-        if(item.collection) holder.collection.setBackgroundResource(R.drawable.shares_un_collection) else holder.collection.setBackgroundResource(R.drawable.shares_collection)
-        if(item.good) holder.good.setBackgroundResource(R.drawable.shares_un_good) else holder.good.setBackgroundResource(R.drawable.shares_good)
-        if(item.bad) holder.bad.setBackgroundResource(R.drawable.shares_un_bad) else holder.bad.setBackgroundResource(R.drawable.shares_bad)
-
-
+        if (item.optional == 0) holder.optional.setBackgroundResource(R.drawable.shares_un_optional) else holder.optional.setBackgroundResource(
+            R.drawable.shares_optional
+        )
+        if (item.collection == 0) holder.collection.setBackgroundResource(R.drawable.shares_un_collection) else holder.collection.setBackgroundResource(
+            R.drawable.shares_collection
+        )
+        if (item.good == 0) holder.good.setBackgroundResource(R.drawable.shares_un_good) else holder.good.setBackgroundResource(
+            R.drawable.shares_good
+        )
+        if (item.bad == 0) holder.bad.setBackgroundResource(R.drawable.shares_un_bad) else holder.bad.setBackgroundResource(
+            R.drawable.shares_bad
+        )
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_top_tab, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view,listener)
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View,var listener: SharesItemListener) : RecyclerView.ViewHolder(itemView),View.OnClickListener {
+        override fun onClick(p0: View?) {
+            p0?.let { listener.onItemClick(it,position) }
+        }
 
         var name: TextView = itemView.findViewById(R.id.shares_item_name)
         var picture: ImageView = itemView.findViewById(R.id.shares_item_picture)
@@ -50,6 +60,14 @@ class SharesAdapter(var context:Context) : AdapterDelegate<TopTabItem, SharesAda
         var collection: ImageView = itemView.findViewById(R.id.shares_item_collection)
         var good: ImageView = itemView.findViewById(R.id.shares_item_good)
         var bad: ImageView = itemView.findViewById(R.id.shares_item_bad)
+
+        init {
+            picture.setOnClickListener(this)
+            optional.setOnClickListener(this)
+            collection.setOnClickListener(this)
+            good.setOnClickListener(this)
+            bad.setOnClickListener(this)
+        }
 
     }
 

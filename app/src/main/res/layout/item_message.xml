@@ -1,25 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:padding="3dp"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:padding="5dp"
     android:background="#F3F0D5"
-    android:layout_height="wrap_content">
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="3dp"
-        >
-
-        <ImageView
-            android:id="@+id/message_picture"
-            android:layout_width="350dp"
-            android:layout_height="500dp"
-            />
-
-    </LinearLayout>
-
+    android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,7 +24,7 @@
                 android:layout_weight="1"
                 android:textAlignment="textStart"
                 android:textColor="#000"
-                android:textSize="30sp"
+                android:textSize="10sp"
                 android:text="@string/app_name"
                 />
             <TextView
@@ -50,7 +34,7 @@
                 android:layout_weight="1"
                 android:textColor="#FFE200"
                 android:textAlignment="textEnd"
-                android:textSize="30sp"
+                android:textSize="10sp"
                 android:text="@string/app_name"
                 />
 
@@ -70,7 +54,7 @@
                 android:layout_weight="1"
                 android:textColor="#008EFF"
                 android:textAlignment="textStart"
-                android:textSize="15sp"
+                android:textSize="10sp"
                 android:text="@string/app_name"
                 />
             <TextView
@@ -80,7 +64,7 @@
                 android:layout_weight="1"
                 android:textColor="#EE0000"
                 android:textAlignment="textEnd"
-                android:textSize="30sp"
+                android:textSize="5dp"
                 android:text="@string/app_name"
                 />
 
@@ -88,5 +72,11 @@
 
 
     </LinearLayout>
+    <ImageView
+        android:id="@+id/message_picture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        />
 
 </LinearLayout>

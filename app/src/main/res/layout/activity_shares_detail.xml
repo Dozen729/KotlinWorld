@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/shares_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_margin="3dp"
+        android:gravity="right"
+        android:text="删除"
+        android:textColor="#FF0000"
+        android:textSize="20sp"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/shares_detail_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:text="@string/app_name"
+        android:textColor="#000" />
+
+
+    <include
+        layout="@layout/item_top_tab"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/shares_detail_monthly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="月"
+            android:textColor="#000000" />
+
+        <Button
+            android:id="@+id/shares_detail_weekly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="周"
+            android:textColor="#000000" />
+
+        <Button
+            android:id="@+id/shares_detail_daily"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="日"
+            android:textColor="#000000" />
+
+        <Button
+            android:id="@+id/shares_detail_min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="分"
+            android:textColor="#000000" />
+    </LinearLayout>
+</LinearLayout>

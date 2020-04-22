@@ -9,8 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="vertical"
-        app:menuTextSize="15dp"
-        app:tabWidth="220dp"
+        app:menuTextSize="10dp"
+        app:tabWidth="100dp"
         app:menuSelectIcon="@drawable/menu_select"
         app:menuUnSelectIcon="@drawable/menu_un_select" />
 
@@ -18,9 +18,34 @@
         android:id="@+id/shares_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
+        >
+    </androidx.recyclerview.widget.RecyclerView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         >
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <Button
+            android:id="@+id/shares_add_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="加载更多"/>
+
+        <EditText
+            android:id="@+id/shares_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/shares_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="搜索信息"
+            />
+
+    </LinearLayout>
 
 
 </LinearLayout>
