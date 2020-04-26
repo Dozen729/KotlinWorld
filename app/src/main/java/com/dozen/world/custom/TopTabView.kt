@@ -166,6 +166,7 @@ class TopTabView : LinearLayout {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
                 next = event.x
+                move = 0f
             }
             MotionEvent.ACTION_MOVE -> {
                 move = next - event.x
