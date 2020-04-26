@@ -1,15 +1,14 @@
 package com.dozen.world.face
 
-import android.media.*
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.dozen.world.R
 import com.dozen.world.custom.TopTabClickListener
 import com.dozen.world.ffmpeg.AudioTest
+import com.dozen.world.ffmpeg.CameraShowTest
 import kotlinx.android.synthetic.main.activity_demo.*
-import java.io.*
 
 /**
  * Created by Hugo on 20-4-23.
@@ -23,6 +22,7 @@ class DemoActivity : AppCompatActivity() {
     private val TAG = this.toString()
 
     private lateinit var audioTest: AudioTest
+    private lateinit var mCameraShowTest: CameraShowTest
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +39,24 @@ class DemoActivity : AppCompatActivity() {
                 "PCM转WAV"
             )
         )
-
         audio_record_track.ttcl = artListener
 
+        camera_show_test.initSwitchData(
+            arrayListOf(
+                "SurfaceView",
+                "TextureView",
+                "NV21",
+                "ViewGONE"
+            )
+        )
+        camera_show_test.ttcl = cameraListener
+        camera_surface_view.visibility = View.GONE
+        camera_texture_view.visibility = View.GONE
+
+
         audioTest = AudioTest.instance
+        mCameraShowTest=CameraShowTest.instance
+
 
     }
 
@@ -75,5 +89,28 @@ class DemoActivity : AppCompatActivity() {
             }
         }
     }
+
+    private var cameraListener = object : TopTabClickListener {
+        override fun clickListener(i: Int) {
+            when (i) {
+                0 -> {
+                    mCameraShowTest.openSurface(camera_surface_view)
+                    Log.d(TAG, "camera")
+                }
+                1 -> {
+                    mCameraShowTest.openTexture(camera_texture_view)
+
+                }
+                2 -> {
+                    mCameraShowTest.showNV21Data(camera_bitmap_show)
+                }
+                3 -> {
+                    mCameraShowTest.closeCamera()
+                }
+            }
+
+        }
+    }
+
 
 }

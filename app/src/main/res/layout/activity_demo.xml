@@ -12,6 +12,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <com.dozen.world.ffmpeg.CommonSurfaceView
+                android:layout_width="200dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                />
+
             <com.dozen.world.custom.TopTabView
                 android:id="@+id/audio_record_track"
                 android:layout_width="match_parent"
@@ -23,6 +29,88 @@
                 app:menuUnSelectIcon="@drawable/menu_un_select"
                 app:menuSelectIcon="@drawable/menu_select"
                 />
+
+            <com.dozen.world.custom.TopTabView
+                android:id="@+id/camera_show_test"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                app:menuTextSize="10sp"
+                app:tabWidth="200dp"
+                app:menuUnSelectIcon="@drawable/menu_un_select"
+                app:menuSelectIcon="@drawable/menu_select"
+                />
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SurfaceView"
+                            android:textSize="15sp"
+                            android:textColor="#FF0000"
+                            />
+                        <SurfaceView
+                            android:id="@+id/camera_surface_view"
+                            android:layout_width="200dp"
+                            android:layout_height="100dp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="3dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TextureView"
+                            android:textSize="15sp"
+                            android:textColor="#FF0000"
+                            />
+                        <TextureView
+                            android:id="@+id/camera_texture_view"
+                            android:layout_gravity="end"
+                            android:layout_width="200dp"
+                            android:layout_height="100dp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="3dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ImageView"
+                            android:textSize="15sp"
+                            android:textColor="#FF0000"
+                            />
+                        <ImageView
+                            android:id="@+id/camera_bitmap_show"
+                            android:layout_width="200dp"
+                            android:layout_height="100dp"/>
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
 
 
         </LinearLayout>
