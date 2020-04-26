@@ -1,5 +1,6 @@
 package com.dozen.world
 
+import android.Manifest
 import android.graphics.Color
 import com.dozen.world.bean.RoundItem
 
@@ -54,8 +55,8 @@ class Constant {
                             NameTip.TEST.name,
                             size,
                             Color.RED,
-                            "",
-                            "样例太少，测试专用"
+                            "com.dozen.world.face.DemoActivity",
+                            "测试专用"
                         )
                         dataList.add(item)
                     }
@@ -75,6 +76,13 @@ class Constant {
 
             return dataList
         }
+
+
+        val user_permission: ArrayList<String> = arrayListOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.RECORD_AUDIO
+        )
 
         val shares_top:ArrayList<String> = arrayListOf("所有", "自选", "收藏", "良好", "糟糕")
 
