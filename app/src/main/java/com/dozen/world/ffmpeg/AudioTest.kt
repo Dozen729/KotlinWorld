@@ -180,6 +180,11 @@ class AudioTest {
     //将pcm格式的文件转换为WAV格式的
     private fun copyWaveFile(pcmPath: String, wavPath: String) {
 
+        val file=File(PCMPath)
+        if (!file.exists()){
+            return
+        }
+
         val fileIn = FileInputStream(pcmPath)
         val fileOut = FileOutputStream(wavPath)
         val data = ByteArray(bufferSizeInByte)
