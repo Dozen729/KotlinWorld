@@ -20,9 +20,9 @@ import java.io.IOException
 class CameraShowTest {
     private lateinit var mCamera: Camera
     private var open = false
-    private lateinit var surfaceView: SurfaceView
+    private var surfaceView: SurfaceView? = null
     private lateinit var imageView:ImageView
-    private lateinit var textureView: TextureView
+    private var textureView: TextureView? = null
 
     //ImageView show
     private lateinit var mBAOS:ByteArrayOutputStream
@@ -43,9 +43,9 @@ class CameraShowTest {
             open = true
         }
         surfaceView=sv
-        surfaceView.visibility = View.VISIBLE
-        surfaceView.holder.addCallback(surfaceCallBack)
-        surfaceView.keepScreenOn = true
+        surfaceView?.visibility = View.VISIBLE
+        surfaceView?.holder!!.addCallback(surfaceCallBack)
+        surfaceView?.keepScreenOn = true
 
     }
 
@@ -56,9 +56,9 @@ class CameraShowTest {
             open = true
         }
         textureView=tv
-        textureView.visibility = View.VISIBLE
-        textureView.surfaceTextureListener = textureCallBack
-        textureView.invalidate()
+        textureView?.visibility = View.VISIBLE
+        textureView?.surfaceTextureListener = textureCallBack
+        textureView?.invalidate()
 
 
     }
@@ -138,8 +138,8 @@ class CameraShowTest {
             open = false
             mCamera.setPreviewCallback(null)
             mCamera.release()
-            textureView.visibility = View.GONE
-            surfaceView.visibility = View.GONE
+            textureView?.visibility = View.GONE
+            surfaceView?.visibility = View.GONE
         }
     }
 }
