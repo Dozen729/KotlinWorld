@@ -78,7 +78,7 @@ class SharesActivity : AppCompatActivity(), TopTabClickListener, SharesItemListe
 
         sh = SharesDBHelper(baseContext)
 
-        shares_top.initSwitchData(Constant.shares_top)
+        shares_top.initSwitchData(Constant.SharesTop)
 
         shares_top.ttcl=this
 
@@ -127,7 +127,7 @@ class SharesActivity : AppCompatActivity(), TopTabClickListener, SharesItemListe
                 try {
                     sh.deleteAll()
                     val data = ArrayList<TopTabItem>()
-                    Constant.shares_sz.forEachIndexed { index, value ->
+                    Constant.SharesSZ.forEachIndexed { index, value ->
                         data.add(
                             TopTabItem(
                                 index,
@@ -140,7 +140,7 @@ class SharesActivity : AppCompatActivity(), TopTabClickListener, SharesItemListe
                             )
                         )
                     }
-                    Constant.shares_sh.forEachIndexed { index, value ->
+                    Constant.SharesSH.forEachIndexed { index, value ->
                         data.add(
                             TopTabItem(
                                 index,

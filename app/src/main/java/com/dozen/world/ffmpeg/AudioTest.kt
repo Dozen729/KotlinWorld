@@ -3,6 +3,7 @@ package com.dozen.world.ffmpeg
 import android.media.*
 import android.os.Environment
 import android.util.Log
+import com.dozen.world.Constant
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -24,10 +25,8 @@ class AudioTest {
         private const val channel_out=AudioFormat.CHANNEL_OUT_MONO
         private const val EncodingType = AudioFormat.ENCODING_PCM_16BIT
         
-        private val PCMPath =
-            Environment.getExternalStorageDirectory().path.toString() + "/hugo/audio_test.pcm"
-        private val WAVPath =
-            Environment.getExternalStorageDirectory().path.toString() + "/hugo/audio_test_wav.wav"
+        private val PCMPath =Constant.KotlinFilePath + "/audio_test.pcm"
+        private val WAVPath =Constant.KotlinFilePath + "/audio_test_wav.wav"
 
         val instance: AudioTest by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
             AudioTest()

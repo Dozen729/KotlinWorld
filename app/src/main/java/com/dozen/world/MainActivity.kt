@@ -3,13 +3,9 @@ package com.dozen.world
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
-import android.os.Message
 import android.util.Log
-import android.view.MotionEvent
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -43,25 +39,6 @@ class MainActivity : AppCompatActivity(), RoundClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val data = ArrayList<RoundItem>()
-//        for (i in 1..30) {
-//            val co: Color = Color.valueOf(
-//                (Math.random() * 255).toFloat(),
-//                (Math.random() * 255).toFloat(), (Math.random() * 255).toFloat()
-//            )
-//            val item = RoundItem(
-//                i,
-//                "name $i",
-//                (Math.random() * 20 + 1).toFloat(),
-//                co.toArgb(),
-//                "",
-//                "重写构造方法。一般是重写前三个构造方法，让前两个构造方法最终调用三个参数的构造方法，然后在第三个构造方法中进行一些初始化操作。"
-//            )
-//            data.add(item)
-//        }
-//        round_test.dataInit=data
-
-
         round_test.dataInit = Constant.getDataList()
         round_test.clickListener = this
         round_test.rotateSpeed = 3f
@@ -69,12 +46,13 @@ class MainActivity : AppCompatActivity(), RoundClickListener {
         //无聊旋转中无聊旋转中无聊旋转中无聊旋转中无聊旋转中
         startRotate()
 
+        //Constant.kt的UserPermission中加入要请求的权限
         checkPermission()
 
     }
 
     private fun checkPermission(){
-        Constant.user_permission.forEach {
+        Constant.UserPermission.forEach {
             val hasPermission=ContextCompat.checkSelfPermission(application,it)
             if (hasPermission!=PackageManager.PERMISSION_GRANTED){
                 //没有权限

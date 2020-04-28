@@ -68,7 +68,8 @@ class CommonSurfaceView: SurfaceView,SurfaceHolder.Callback,Runnable {
     override fun run() {
 
         while (isShow){
-            draw()
+            Thread.sleep(1000)
+            if (isShow) draw()
         }
 
     }

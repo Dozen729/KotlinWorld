@@ -2,6 +2,7 @@ package com.dozen.world
 
 import android.Manifest
 import android.graphics.Color
+import android.os.Environment
 import com.dozen.world.bean.RoundItem
 
 /**
@@ -78,17 +79,18 @@ class Constant {
         }
 
 
-        val user_permission: ArrayList<String> = arrayListOf(
+        val UserPermission: ArrayList<String> = arrayListOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.CAMERA
         )
 
-        val shares_top:ArrayList<String> = arrayListOf("所有", "自选", "收藏", "良好", "糟糕")
+        val SharesTop:ArrayList<String> = arrayListOf("所有", "自选", "收藏", "良好", "糟糕")
 
+        val KotlinFilePath:String= Environment.getExternalStorageDirectory().path.toString()+"/hugo"
 
-        val shares_sh: ArrayList<String> = arrayListOf(
+        val SharesSH: ArrayList<String> = arrayListOf(
             "600000",
             "600001",
             "600003",
@@ -1238,7 +1240,7 @@ class Constant {
             "603999"
         )
 
-        val shares_sz: ArrayList<String> = arrayListOf(
+        val SharesSZ: ArrayList<String> = arrayListOf(
             "000001",
             "000002",
             "000004",
