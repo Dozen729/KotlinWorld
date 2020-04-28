@@ -1,6 +1,7 @@
 package com.dozen.world.face
 
 import android.content.Intent
+import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -12,6 +13,7 @@ import com.dozen.world.custom.TopTabClickListener
 import com.dozen.world.ffmpeg.AudioTest
 import com.dozen.world.ffmpeg.CameraShowTest
 import com.dozen.world.ffmpeg.MediaTest
+import com.dozen.world.ffmpeg.TriangleRenderer
 import com.dozen.world.impl.CommonCallback
 import kotlinx.android.synthetic.main.activity_demo.*
 
@@ -70,6 +72,10 @@ class DemoActivity : AppCompatActivity() {
         )
         media_control_test.ttcl = mediaListener
 
+        open_gl_es_test.initSwitchData(arrayListOf(
+            "三角形测试"
+        ))
+        open_gl_es_test.ttcl=openGLListener
 
         audioTest = AudioTest.instance
         mCameraShowTest=CameraShowTest.instance
@@ -175,6 +181,20 @@ class DemoActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private var openGLListener=object :TopTabClickListener{
+        override fun clickListener(i: Int) {
+            when(i){
+                0->{
+                    open_gl_show.visibility=View.VISIBLE
+                    open_gl_show.setEGLContextClientVersion(2)
+                    open_gl_show.setRenderer(TriangleRenderer.instance)
+                    open_gl_show.renderMode=GLSurfaceView.RENDERMODE_WHEN_DIRTY
+                }
+            }
+        }
+
     }
 
 

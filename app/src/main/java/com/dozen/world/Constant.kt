@@ -18,7 +18,7 @@ class Constant {
         fun getDataList(): ArrayList<RoundItem> {
             val tipList = ArrayList<String>()
             tipList.add(NameTip.KOTLIN.name)
-            tipList.add(NameTip.TEST.name)
+            tipList.add(NameTip.FFMPEG.name)
             tipList.add(NameTip.TEST2.name)
             tipList.add(NameTip.SHARES.name)
 
@@ -50,14 +50,18 @@ class Constant {
                         )
                         dataList.add(item)
                     }
-                    NameTip.TEST.name -> {
+                    NameTip.FFMPEG.name -> {
                         val item = RoundItem(
                             i,
-                            NameTip.TEST.name,
+                            "FFmpeg",
                             size,
                             Color.RED,
                             "com.dozen.world.face.DemoActivity",
-                            "测试专用"
+                            "SurfaceView显示图片," +
+                                    "AudioRecord录制音频,AudioTrack播放音频," +
+                                    "SurfaceView,TextureView显示相机," +
+                                    "MediaExtractor,MediaMuxer合并或拆分音视频," +
+                                    "OpenGL画图形,显示图片"
                         )
                         dataList.add(item)
                     }

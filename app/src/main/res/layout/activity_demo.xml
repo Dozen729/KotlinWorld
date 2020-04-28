@@ -123,6 +123,24 @@
                 app:menuSelectIcon="@drawable/menu_select"
                 />
 
+            <com.dozen.world.custom.TopTabView
+                android:id="@+id/open_gl_es_test"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                app:menuTextSize="10sp"
+                app:tabWidth="200dp"
+                app:menuUnSelectIcon="@drawable/menu_un_select"
+                app:menuSelectIcon="@drawable/menu_select"
+                />
+            <android.opengl.GLSurfaceView
+                android:id="@+id/open_gl_show"
+                android:visibility="gone"
+                android:layout_width="300dp"
+                android:layout_height="300dp">
+
+            </android.opengl.GLSurfaceView>
 
         </LinearLayout>
     </ScrollView>
