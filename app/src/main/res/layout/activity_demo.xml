@@ -134,13 +134,37 @@
                 app:menuUnSelectIcon="@drawable/menu_un_select"
                 app:menuSelectIcon="@drawable/menu_select"
                 />
-            <android.opengl.GLSurfaceView
-                android:id="@+id/open_gl_show"
-                android:visibility="gone"
-                android:layout_width="300dp"
-                android:layout_height="300dp">
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+                    <com.dozen.world.ffmpeg.gl.TriangleSurfaceView
+                        android:id="@+id/open_gl_show_triangle"
+                        android:visibility="gone"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp">
 
-            </android.opengl.GLSurfaceView>
+                    </com.dozen.world.ffmpeg.gl.TriangleSurfaceView>
+                    <com.dozen.world.ffmpeg.gl.SquareSurfaceView
+                        android:id="@+id/open_gl_show_square"
+                        android:visibility="gone"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp">
+
+                    </com.dozen.world.ffmpeg.gl.SquareSurfaceView>
+                    <com.dozen.world.ffmpeg.gl.PictureSurfaceView
+                        android:id="@+id/open_gl_show_picture"
+                        android:visibility="gone"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp">
+
+                    </com.dozen.world.ffmpeg.gl.PictureSurfaceView>
+                </LinearLayout>
+            </HorizontalScrollView>
+
 
         </LinearLayout>
     </ScrollView>

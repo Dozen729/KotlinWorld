@@ -1,6 +1,8 @@
 package com.dozen.world.face
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.util.Log
@@ -10,10 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.dozen.world.Constant
 import com.dozen.world.R
 import com.dozen.world.custom.TopTabClickListener
-import com.dozen.world.ffmpeg.AudioTest
-import com.dozen.world.ffmpeg.CameraShowTest
-import com.dozen.world.ffmpeg.MediaTest
-import com.dozen.world.ffmpeg.TriangleRenderer
+import com.dozen.world.ffmpeg.*
+import com.dozen.world.ffmpeg.gl.PictureRenderer
+import com.dozen.world.ffmpeg.gl.TriangleRenderer
 import com.dozen.world.impl.CommonCallback
 import kotlinx.android.synthetic.main.activity_demo.*
 
@@ -73,7 +74,10 @@ class DemoActivity : AppCompatActivity() {
         media_control_test.ttcl = mediaListener
 
         open_gl_es_test.initSwitchData(arrayListOf(
-            "三角形测试"
+            "三角形测试",
+            "加载图片",
+            "四边形",
+            "close"
         ))
         open_gl_es_test.ttcl=openGLListener
 
@@ -187,11 +191,20 @@ class DemoActivity : AppCompatActivity() {
         override fun clickListener(i: Int) {
             when(i){
                 0->{
-                    open_gl_show.visibility=View.VISIBLE
-                    open_gl_show.setEGLContextClientVersion(2)
-                    open_gl_show.setRenderer(TriangleRenderer.instance)
-                    open_gl_show.renderMode=GLSurfaceView.RENDERMODE_WHEN_DIRTY
+                    open_gl_show_triangle.visibility = View.VISIBLE
                 }
+                1 -> {
+                    open_gl_show_picture.visibility = View.VISIBLE
+                }
+                2 -> {
+                    open_gl_show_square.visibility = View.VISIBLE
+                }
+                3 -> {
+                    open_gl_show_triangle.visibility = View.GONE
+                    open_gl_show_picture.visibility = View.GONE
+                    open_gl_show_square.visibility = View.GONE
+                }
+
             }
         }
 
