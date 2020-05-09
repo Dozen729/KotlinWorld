@@ -1,9 +1,6 @@
 package com.dozen.world.face
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -13,8 +10,7 @@ import com.dozen.world.Constant
 import com.dozen.world.R
 import com.dozen.world.custom.TopTabClickListener
 import com.dozen.world.ffmpeg.*
-import com.dozen.world.ffmpeg.gl.PictureRenderer
-import com.dozen.world.ffmpeg.gl.TriangleRenderer
+import com.dozen.world.ffmpeg.mp3toaac.AudioCodecTest
 import com.dozen.world.impl.CommonCallback
 import kotlinx.android.synthetic.main.activity_demo.*
 
@@ -80,6 +76,13 @@ class DemoActivity : AppCompatActivity() {
             "close"
         ))
         open_gl_es_test.ttcl=openGLListener
+
+        open_gl_media_codec.initSwitchData(
+            arrayListOf(
+                "MP3转AAC"
+            )
+        )
+        open_gl_media_codec.ttcl = mediaCodecListener
 
         audioTest = AudioTest.instance
         mCameraShowTest=CameraShowTest.instance
@@ -210,5 +213,54 @@ class DemoActivity : AppCompatActivity() {
 
     }
 
+    private var mediaCodecListener = object : TopTabClickListener {
+        override fun clickListener(i: Int) {
+            when (i) {
+                0 -> {
+
+                    AudioCodecTest.getPCMFromAudio(
+                        Constant.KotlinFilePath + "/audio_test_wav.wav",
+                        Constant.KotlinFilePath + "/codec_pcm.pcm",
+                        object : CommonCallback {
+                            override fun success(id: Int?) {
+                                AudioCodecTest.pcmToAudio(
+                                    Constant.KotlinFilePath + "/codec_pcm.pcm",
+                                    Constant.KotlinFilePath + "/audio_aac.m4a",
+                                    object : CommonCallback {
+                                        override fun fail(id: Int?) {
+                                            Toast.makeText(baseContext, "fail", Toast.LENGTH_LONG)
+                                                .show()
+
+                                        }
+
+                                        override fun result(data: String) {
+
+                                        }
+
+                                        override fun success(id: Int?) {
+                                            Toast.makeText(
+                                                baseContext,
+                                                "success",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    })
+                            }
+
+                            override fun fail(id: Int?) {
+                                Toast.makeText(baseContext, "fail fail", Toast.LENGTH_LONG).show()
+
+                            }
+
+                            override fun result(data: String) {
+                            }
+                        })
+
+
+                }
+            }
+        }
+
+    }
 
 }
