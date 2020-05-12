@@ -175,6 +175,11 @@
                 app:menuUnSelectIcon="@drawable/menu_un_select"
                 app:menuSelectIcon="@drawable/menu_select"
                 />
+            <FrameLayout
+                android:id="@+id/open_gl_h264_show"
+                android:visibility="gone"
+                android:layout_width="200dp"
+                android:layout_height="200dp"/>
 
 
         </LinearLayout>

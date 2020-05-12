@@ -10,6 +10,7 @@ import com.dozen.world.Constant
 import com.dozen.world.R
 import com.dozen.world.custom.TopTabClickListener
 import com.dozen.world.ffmpeg.*
+import com.dozen.world.ffmpeg.h264.Camera2Preview
 import com.dozen.world.ffmpeg.mp3toaac.AudioCodecTest
 import com.dozen.world.impl.CommonCallback
 import kotlinx.android.synthetic.main.activity_demo.*
@@ -79,7 +80,9 @@ class DemoActivity : AppCompatActivity() {
 
         open_gl_media_codec.initSwitchData(
             arrayListOf(
-                "MP3转AAC"
+                "MP3转AAC",
+                "录制视频",
+                "停止录制视频"
             )
         )
         open_gl_media_codec.ttcl = mediaCodecListener
@@ -258,9 +261,22 @@ class DemoActivity : AppCompatActivity() {
 
 
                 }
+                1->{
+                    open_gl_h264_show.visibility=View.VISIBLE
+                    camera2Preview=Camera2Preview(this@DemoActivity)
+                    open_gl_h264_show.addView(camera2Preview)
+                    camera2Preview.onResume()
+                    camera2Preview.toggleVideo()
+
+                }
+                2->{
+                    camera2Preview.toggleVideo()
+                    camera2Preview.onPause()
+                }
             }
         }
 
     }
+    lateinit var camera2Preview:Camera2Preview
 
 }
