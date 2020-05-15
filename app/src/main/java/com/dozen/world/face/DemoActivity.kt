@@ -11,9 +11,11 @@ import com.dozen.world.R
 import com.dozen.world.custom.TopTabClickListener
 import com.dozen.world.ffmpeg.*
 import com.dozen.world.ffmpeg.h264.Camera2Preview
+import com.dozen.world.ffmpeg.h264.PlayMedia
 import com.dozen.world.ffmpeg.mp3toaac.AudioCodecTest
 import com.dozen.world.impl.CommonCallback
 import kotlinx.android.synthetic.main.activity_demo.*
+import java.io.File
 
 /**
  * Created by Hugo on 20-4-23.
@@ -29,7 +31,7 @@ class DemoActivity : AppCompatActivity() {
     private lateinit var audioTest: AudioTest
     private lateinit var mCameraShowTest: CameraShowTest
     private lateinit var mediaTest: MediaTest
-
+    private var camera2Preview: Camera2Preview? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,8 +83,10 @@ class DemoActivity : AppCompatActivity() {
         open_gl_media_codec.initSwitchData(
             arrayListOf(
                 "MP3转AAC",
-                "录制视频",
-                "停止录制视频"
+                "录制h264",
+                "录制MP4",
+                "停止录制视频",
+                "播放视频"
             )
         )
         open_gl_media_codec.ttcl = mediaCodecListener
@@ -233,12 +237,9 @@ class DemoActivity : AppCompatActivity() {
                                         override fun fail(id: Int?) {
                                             Toast.makeText(baseContext, "fail", Toast.LENGTH_LONG)
                                                 .show()
-
                                         }
 
-                                        override fun result(data: String) {
-
-                                        }
+                                        override fun result(data: String) {}
 
                                         override fun success(id: Int?) {
                                             Toast.makeText(
@@ -255,28 +256,67 @@ class DemoActivity : AppCompatActivity() {
 
                             }
 
-                            override fun result(data: String) {
-                            }
+                            override fun result(data: String) {}
                         })
 
 
                 }
                 1->{
                     open_gl_h264_show.visibility=View.VISIBLE
-                    camera2Preview=Camera2Preview(this@DemoActivity)
-                    open_gl_h264_show.addView(camera2Preview)
-                    camera2Preview.onResume()
-                    camera2Preview.toggleVideo()
-
+                    if (camera2Preview == null) {
+                        camera2Preview = Camera2Preview(this@DemoActivity)
+                        open_gl_h264_show.addView(camera2Preview)
+                    }
+                    camera2Preview?.startVideo(Constant.KotlinFilePath + "/" + "MP4_h264_Video.h264")
                 }
                 2->{
-                    camera2Preview.toggleVideo()
-                    camera2Preview.onPause()
+                    open_gl_h264_show.visibility = View.VISIBLE
+                    if (camera2Preview == null) {
+                        camera2Preview = Camera2Preview(this@DemoActivity)
+                        open_gl_h264_show.addView(camera2Preview)
+                    }
+                    //MP4格式
+                    camera2Preview?.startVideo(Constant.KotlinFilePath + "/" + "MP4_h264_Video.mp4")
+                }
+                3 -> {
+                    if (camera2Preview != null) {
+                        camera2Preview?.stopVideo()
+                        open_gl_h264_show.visibility = View.GONE
+
+                    }
+                }
+                4 -> {
+                    val filePath =
+                        when {
+                            File(Constant.KotlinFilePath + "/MP4_h264_Video.h264").exists() -> Constant.KotlinFilePath + "/MP4_h264_Video.h264"
+                            File(Constant.KotlinFilePath + "/MP4_h264_Video.mp4").exists() -> Constant.KotlinFilePath + "/MP4_h264_Video.mp4"
+                            else -> null
+                        }
+                    if (filePath != null) {
+                        open_gl_h264_play.visibility = View.VISIBLE
+                        val playMedia = PlayMedia()
+
+                        playMedia.initCallback(object : CommonCallback {
+                            override fun success(id: Int?) {
+                                open_gl_h264_play.visibility = View.GONE
+                                Toast.makeText(baseContext, "播放完成", Toast.LENGTH_SHORT).show()
+                            }
+
+                            override fun fail(id: Int?) {}
+
+                            override fun result(data: String) {}
+                        })
+
+                        playMedia.setFileInputStream(filePath, open_gl_h264_play)
+                        playMedia.initMediaCodec()
+                    } else {
+                        Toast.makeText(baseContext, "文件不存在", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
             }
         }
 
     }
-    lateinit var camera2Preview:Camera2Preview
 
 }

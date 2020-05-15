@@ -12,8 +12,6 @@ import android.hardware.camera2.*
 import android.media.ImageReader
 import android.os.Handler
 import android.os.HandlerThread
-import android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
-import android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.Log
@@ -22,10 +20,7 @@ import android.view.Surface
 import android.view.TextureView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.dozen.world.Constant
 import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -64,19 +59,20 @@ class Camera2Preview: TextureView {
 
     private lateinit var mBackgroundHandler: Handler
     private lateinit var mBackgroundThread: HandlerThread
-    private lateinit var mCameraManager: CameraManager
+    private var mCameraManager: CameraManager? = null
     private lateinit var mCameraDevice: CameraDevice
-    protected lateinit var mCameraCaptureSessions: CameraCaptureSession
-    protected lateinit var mPreviewRequestBuilder: CaptureRequest.Builder
+    private lateinit var mCameraCaptureSessions: CameraCaptureSession
+    private lateinit var mPreviewRequestBuilder: CaptureRequest.Builder
     private lateinit var mImageReader: ImageReader
     private lateinit var mContext: Context
 
     private lateinit var mPreviewSize: Size
 
     private lateinit var mCameraId: String
+    private lateinit var outputMediaFile: File
 
 
-    var textureListener = object : SurfaceTextureListener {
+    private var textureListener = object : SurfaceTextureListener {
         override fun onSurfaceTextureSizeChanged(p0: SurfaceTexture?, p1: Int, p2: Int) {
 
         }
@@ -96,23 +92,30 @@ class Camera2Preview: TextureView {
 
     }
 
-    fun onResume() {
-        Log.e(TAG, "onResume")
+    fun startVideo(filePath: String) {
+
+        outputMediaFile = File(filePath)
+        // Create the storage directory if it does not exist
+        if (outputMediaFile.exists()) {
+            outputMediaFile.delete()
+            if (!outputMediaFile.mkdirs()) {
+                Log.d(TAG, "failed to create directory")
+                return
+            }
+        }
+
         startBackgroundThread()
-        if (isAvailable()) {
+        if (isAvailable) {
             setupCamera()
         } else {
-            setSurfaceTextureListener(textureListener)
+            surfaceTextureListener = textureListener
         }
+        toggleVideo()
     }
 
 
-    fun onPause() {
-        Log.e(TAG, "onPause")
-        if (mAvcEncoder != null) {
-            mAvcEncoder?.stopThread()
-//            mAvcEncoder = null
-        }
+    fun stopVideo() {
+        toggleVideo()
         closeCamera()
         stopBackgroundThread()
     }
@@ -121,8 +124,6 @@ class Camera2Preview: TextureView {
         mBackgroundThread.quitSafely()
         try {
             mBackgroundThread.join()
-//            mBackgroundThread = null
-//            mBackgroundHandler = null
         } catch (e:InterruptedException) {
             e.printStackTrace()
         }
@@ -131,23 +132,12 @@ class Camera2Preview: TextureView {
 
     private fun closeCamera() {
         closePreviewSession()
-
-        if (null != mCameraDevice) {
-            mCameraDevice.close()
-//            mCameraDevice = null
-        }
-
-        if (null != mImageReader) {
-            mImageReader.close()
-//            mImageReader = null
-        }
+        mCameraDevice.close()
+        mImageReader.close()
     }
 
     private fun closePreviewSession() {
-        if (null != mCameraCaptureSessions) {
-            mCameraCaptureSessions.close()
-//            mCameraCaptureSessions = null
-        }
+        mCameraCaptureSessions.close()
     }
 
     /**
@@ -156,7 +146,7 @@ class Camera2Preview: TextureView {
     private fun startBackgroundThread() {
         mBackgroundThread = HandlerThread("Camera Background")
         mBackgroundThread.start()
-        mBackgroundHandler = Handler(mBackgroundThread.getLooper())
+        mBackgroundHandler = Handler(mBackgroundThread.looper)
 
     }
 
@@ -171,22 +161,16 @@ class Camera2Preview: TextureView {
         }
         try {
             //获取相机特征对象
-            var characteristics = mCameraManager.getCameraCharacteristics(mCameraId)
+            val characteristics = mCameraManager?.getCameraCharacteristics(mCameraId)!!
             //获取相机输出流配置
-            var map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-            if (map == null) {
+            val map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
 
-            }
             //获取预览输出尺寸
             mPreviewSize = getPreferredPreviewSize(
                 map!!.getOutputSizes(Class.forName("android.graphics.SurfaceTexture")),
                 width, height
             )
-//            Log.e(TAG, "setupCamera: best preview size width=" + mPreviewSize.getWidth()
-//                    + ",height=" + mPreviewSize.getHeight())
-
-                        transformImage (getWidth().toFloat(), getHeight().toFloat()
-            )
+            transformImage(width.toFloat(), height.toFloat())
 
             if (ActivityCompat.checkSelfPermission(
                     mContext,
@@ -197,7 +181,7 @@ class Camera2Preview: TextureView {
             }
 
             setupImageReader()
-            mCameraManager.openCamera(mCameraId, stateCallback, null)
+            mCameraManager?.openCamera(mCameraId, stateCallback, null)
         } catch (e:CameraAccessException) {
             e.printStackTrace()
         }
@@ -206,8 +190,8 @@ class Camera2Preview: TextureView {
 
 
     private fun getPreferredPreviewSize(mapSizes: Array<Size>, width: Int, height: Int): Size {
-        Log.e(TAG, "getPreferredPreviewSize: surface width=" + width + ",surface height=" + height)
-        var collectorSizes = ArrayList<Size>()
+        Log.e(TAG, "getPreferredPreviewSize: surface width=$width,surface height=$height")
+        val collectorSizes = ArrayList<Size>()
 
         mapSizes.forEach {
             if (width > height) {
@@ -237,31 +221,30 @@ class Camera2Preview: TextureView {
             }
         }
         Log.e(
-            TAG, "getPreferredPreviewSize: best width=" +
-                    mapSizes[0].getWidth() + ",height=" + mapSizes[0].getHeight()
+            TAG,
+            "getPreferredPreviewSize: best width=" + mapSizes[0].width + ",height=" + mapSizes[0].height
         )
         return mapSizes[0]
     }
 
 
     private fun transformImage(width:Float, height:Float) {
-        var matrix = Matrix()
-        var rotation =(mContext as Activity).windowManager.defaultDisplay.rotation
-        var textureRectF = RectF(0f, 0f, width, height)
-        var previewRectF = RectF(0f, 0f, mPreviewSize.width.toFloat(),
+        val matrix = Matrix()
+        val rotation = (mContext as Activity).windowManager.defaultDisplay.rotation
+        val textureRectF = RectF(0f, 0f, width, height)
+        val previewRectF = RectF(
+            0f, 0f, mPreviewSize.width.toFloat(),
             mPreviewSize.width.toFloat()
         )
-        var centerX = textureRectF . centerX ()
-        var centerY = textureRectF . centerY ()
+        val centerX = textureRectF.centerX()
+        val centerY = textureRectF.centerY()
         if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
             previewRectF.offset(
                 centerX - previewRectF.centerX(),
                 centerY - previewRectF.centerY()
             )
             matrix.setRectToRect(textureRectF, previewRectF, Matrix.ScaleToFit.FILL)
-            var scale = Math . max ( width / mPreviewSize .width,
-             height / mPreviewSize .height
-            )
+            val scale = (width / mPreviewSize.width).coerceAtLeast(height / mPreviewSize.height)
             matrix.postScale(scale, scale, centerX, centerY)
             matrix.postRotate((90 * (rotation - 2)).toFloat(), centerX, centerY)
         }
@@ -275,38 +258,36 @@ class Camera2Preview: TextureView {
     private fun setupImageReader() {
         //2代表ImageReader中最多可以获取两帧图像流
         mImageReader = ImageReader.newInstance(
-            mPreviewSize.getWidth(),
-            mPreviewSize.getHeight(),
+            mPreviewSize.width,
+            mPreviewSize.height,
             ImageFormat.YV12,
             1
         )
 
-//        mImageReader.setOnImageAvailableListener(ImageReader.OnImageAvailableListener {  })
-
         mImageReader.setOnImageAvailableListener({
-                Log.e(TAG, "onImageAvailable: " + Thread.currentThread().getName())
+            Log.e(TAG, "onImageAvailable: " + Thread.currentThread().name)
                 //这里一定要调用reader.acquireNextImage()和img.close方法否则不会一直回掉了
-                var img = it.acquireNextImage ()
+            val img = it.acquireNextImage()
                 when(mState) {
                     STATE_PREVIEW->{
                         Log.e(TAG, "mState: STATE_PREVIEW")
                         if (mAvcEncoder != null) {
                             mAvcEncoder?.stopThread()
-//                            mAvcEncoder = null
+                            mAvcEncoder = null
                             Toast.makeText(mContext, "停止录制视频成功", Toast.LENGTH_SHORT).show()
                         }
                     }
                     STATE_RECORD->{
                         Log.e(TAG, "mState: STATE_RECORD")
-                        var planes = img.planes
+                        val planes = img.planes
                         var dataYUV:ByteArray= ByteArray(0)
                         if (planes.size >= 3) {
-                            var bufferY = planes [0].getBuffer()
-                            var bufferU = planes [1].getBuffer()
-                            var bufferV = planes [2].getBuffer()
-                            var lengthY = bufferY . remaining ()
-                            var lengthU = bufferU . remaining ()
-                            var lengthV = bufferV . remaining ()
+                            val bufferY = planes[0].buffer
+                            val bufferU = planes[1].buffer
+                            val bufferV = planes[2].buffer
+                            val lengthY = bufferY.remaining()
+                            val lengthU = bufferU.remaining()
+                            val lengthV = bufferV.remaining()
                             dataYUV = ByteArray(lengthY + lengthU + lengthV)
                             bufferY.get(dataYUV, 0, lengthY)
                             bufferU.get(dataYUV, lengthY, lengthU)
@@ -314,9 +295,11 @@ class Camera2Preview: TextureView {
                         }
 
                         if (mAvcEncoder == null) {
-                            mAvcEncoder = AvcEncoder (mPreviewSize.getWidth(),
-                            mPreviewSize.getHeight(), mFrameRate,
-                            getOutputMediaFile(MEDIA_TYPE_VIDEO), false)
+                            mAvcEncoder = AvcEncoder(
+                                mPreviewSize.width,
+                                mPreviewSize.height, mFrameRate,
+                                outputMediaFile, false
+                            )
                             mAvcEncoder?.startEncoderThread()
                             Toast.makeText(mContext, "开始录制视频成功", Toast.LENGTH_SHORT).show()
                         }
@@ -328,47 +311,15 @@ class Camera2Preview: TextureView {
         , mBackgroundHandler)
     }
 
-    /**
-     * 获取输出照片视频路径
-     *
-     * @param mediaType
-     * @return
-     */
-    fun getOutputMediaFile(mediaType:Int):File
-    {
-        var timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date ())
-        var fileName:String = ""
-        var storageDir:File?=null
-        if (mediaType == MEDIA_TYPE_IMAGE) {
-            fileName = "JPEG_${timeStamp}_${if(mediaType == MEDIA_TYPE_IMAGE)".jpg" else ".h264"}"
-        } else if (mediaType == MEDIA_TYPE_VIDEO) {
-            fileName = "MP4_${timeStamp}_${if(mediaType == MEDIA_TYPE_IMAGE)".jpg" else ".h264"}"
-        }
-        storageDir = File(Constant.KotlinFilePath+"/"+fileName)
-        // Create the storage directory if it does not exist
-        if (storageDir.exists()) {
-            storageDir.delete()
-            if (!storageDir.mkdirs()) {
-                Log.d(TAG, "failed to create directory")
-            }
-        }
-
-        return storageDir
-    }
-
-
     private fun getDefaultCameraId() {
         mCameraManager = mContext.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         try {
-            var cameraList = mCameraManager . getCameraIdList ()
-            for (i in 0 until cameraList.size) {
-                var cameraId = cameraList [i]
-                if (TextUtils.equals(cameraId, CAMERA_FONT)) {
-                    mCameraId = cameraId
-                    break
-                } else if (TextUtils.equals(cameraId, CAMERA_BACK)) {
-                    mCameraId = cameraId
-                    break
+            val cameraList = mCameraManager?.cameraIdList!!
+            cameraList.forEach { element ->
+                if (TextUtils.equals(element, CAMERA_FONT)) {
+                    mCameraId = element
+                } else if (TextUtils.equals(element, CAMERA_BACK)) {
+                    mCameraId = element
                 }
             }
         } catch (e:CameraAccessException) {
@@ -389,7 +340,6 @@ class Camera2Preview: TextureView {
 
         override fun onError(p0: CameraDevice, p1: Int) {
             mCameraDevice.close()
-//            mCameraDevice = null
         }
     }
 
@@ -401,10 +351,10 @@ class Camera2Preview: TextureView {
         try {
             Log.e(TAG, "createCameraPreview")
             //获取当前TextureView的SurfaceTexture
-            var texture = getSurfaceTexture ()
+            val texture = surfaceTexture
             //设置SurfaceTexture默认的缓存区大小，为 上面得到的预览的size大小
-            texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight())
-            var surface = Surface(texture)
+            texture.setDefaultBufferSize(mPreviewSize.width, mPreviewSize.height)
+            val surface = Surface(texture)
             //创建CaptureRequest对象，并且声明类型为TEMPLATE_PREVIEW，可以看出是一个预览类型
 
             mPreviewRequestBuilder =
@@ -414,17 +364,14 @@ class Camera2Preview: TextureView {
             //设置请求的结果返回到到Surface上
             mPreviewRequestBuilder.addTarget(surface)
 
-            mPreviewRequestBuilder.addTarget(mImageReader.getSurface())
+            mPreviewRequestBuilder.addTarget(mImageReader.surface)
 
             //创建CaptureSession对象
             mCameraDevice.createCaptureSession(
-                Arrays.asList(surface, mImageReader.getSurface()),
+                listOf(surface, mImageReader.surface),
                 object :CameraCaptureSession.StateCallback() {
                     override fun onConfigured(p0: CameraCaptureSession) {
                         //The camera is already closed
-                        if (null == mCameraDevice) {
-                            return
-                        }
                         Log.e(TAG, "onConfigured: ")
                         // When the session is ready, we start displaying the preview.
                         mCameraCaptureSessions = p0
@@ -447,9 +394,6 @@ class Camera2Preview: TextureView {
      * 更新预览
      */
     private fun updatePreview() {
-        if (null == mCameraDevice) {
-            Log.e(TAG, "updatePreview error, return")
-        }
         Log.e(TAG, "updatePreview: ")
         //设置相机的控制模式为自动，方法具体含义点进去（auto-exposure, auto-white-balance, auto-focus）
         mPreviewRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
@@ -465,7 +409,7 @@ class Camera2Preview: TextureView {
         }
     }
 
-    fun toggleVideo():Boolean
+    private fun toggleVideo(): Boolean
     {
         return if (mState == STATE_PREVIEW) {
             mState = STATE_RECORD

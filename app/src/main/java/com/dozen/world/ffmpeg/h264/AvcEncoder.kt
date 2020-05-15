@@ -1,14 +1,11 @@
 package com.dozen.world.ffmpeg.h264
 
-
+import android.annotation.SuppressLint
 import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
+import android.util.Log
+import java.io.*
 import java.util.concurrent.ArrayBlockingQueue
 
 /**
@@ -25,22 +22,27 @@ class AvcEncoder(
     var outFile: File,
     var isCamera: Boolean
 ) {
-    private val TAG = "AvcEncoder"
-    private var TIMEOUT_USEC: Long = 10000
+
+    companion object {
+        private const val TAG = "AvcEncoder"
+        private const val TIMEOUT_USER: Long = 10000
+    }
+
+
     private var mYuvQueueSize: Int = 10
 
-    public var mYuvQueue = ArrayBlockingQueue<ByteArray>(mYuvQueueSize)
+    private var mYuvQueue = ArrayBlockingQueue<ByteArray>(mYuvQueueSize)
 
     private lateinit var mMediaCodec: MediaCodec
     private var mWidth: Int = 0
     private var mHeight: Int = 0
     private var mFrameRate: Int = 0
 
-    private lateinit var mOutFile: File
+    private var mOutFile: File
     //true--Camera的预览数据编码
-    // false--Camera2的预览数据编码
+    //false--Camera2的预览数据编码
     private var mIsCamera: Boolean = false
-
+    private var isRunning: Boolean = false
     lateinit var mConfigByte: ByteArray
 
     init {
@@ -50,7 +52,7 @@ class AvcEncoder(
         mFrameRate = frameRate
         mOutFile = outFile
 
-        var mediaFormat =
+        val mediaFormat =
             MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height)
         mediaFormat.setInteger(
             MediaFormat.KEY_COLOR_FORMAT,
@@ -80,10 +82,14 @@ class AvcEncoder(
     }
 
     private fun stopEncoder() {
-        if (mMediaCodec != null) {
+        Log.d(TAG, "stop")
+        try {
+            outputStream.flush()
+            outputStream.close()
             mMediaCodec.stop()
             mMediaCodec.release()
-//            mMediaCodec = null
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 
@@ -97,26 +103,15 @@ class AvcEncoder(
     fun stopThread() {
         if (!isRunning) return
         isRunning = false
-        try {
-            stopEncoder()
-            if (outputStream != null) {
-                outputStream.flush()
-                outputStream.close()
-//                outputStream = null
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
     }
 
-    var isRunning: Boolean = false
+    @SuppressLint("SwitchIntDef")
     fun startEncoderThread() {
 
         Thread(Runnable {
             isRunning = true
             var input: ByteArray? = null
-            var pts: Long = 0
+            var pts: Long
             var generateIndex: Long = 0
 
             while (isRunning) {
@@ -126,11 +121,11 @@ class AvcEncoder(
                         //NV12数据所需空间为如下，所以建立如下缓冲区
                         //y=W*hu=W*H/4v=W*H/4,so total add is W*H*3/2 (1 + 1/4 + 1/4 = 3/2)
                         val yuv420sp = ByteArray(mWidth * mHeight * 3 / 2)
-                        NV21ToNV12(input, yuv420sp, mWidth, mHeight)
+                        nv21ToNV12(input, yuv420sp, mWidth, mHeight)
                         yuv420sp
                     } else {//Camera 2
                         val yuv420sp = ByteArray(mWidth * mHeight * 3 / 2)
-                        YV12toNV12(input, yuv420sp, mWidth, mHeight)
+                        yv12toNV12(input, yuv420sp, mWidth, mHeight)
                         yuv420sp
                     }
                 }
@@ -149,18 +144,18 @@ class AvcEncoder(
                     val bufferInfo = MediaCodec.BufferInfo()
                     var outputBufferIndex = mMediaCodec.dequeueOutputBuffer(
                         bufferInfo,
-                        TIMEOUT_USEC
+                        TIMEOUT_USER
                     )
                     while (outputBufferIndex >= 0) {
                         val outputBuffer = mMediaCodec.getOutputBuffer(outputBufferIndex)!!
                         val outData = ByteArray(bufferInfo.size)
                         outputBuffer.get(outData)
-                        when {
-                            bufferInfo.flags == 2 -> {
+                        when (bufferInfo.flags) {
+                            2 -> {
                                 mConfigByte = ByteArray(bufferInfo.size)
                                 mConfigByte = outData
                             }
-                            bufferInfo.flags == 1 -> {
+                            1 -> {
                                 val keyframe = ByteArray(bufferInfo.size + mConfigByte.size)
                                 System.arraycopy(mConfigByte, 0, keyframe, 0, mConfigByte.size)
                                 System.arraycopy(outData, 0, keyframe, mConfigByte.size, outData.size)
@@ -180,7 +175,7 @@ class AvcEncoder(
                         mMediaCodec.releaseOutputBuffer(outputBufferIndex, false)
                         outputBufferIndex = mMediaCodec.dequeueOutputBuffer(
                             bufferInfo,
-                            TIMEOUT_USEC
+                            TIMEOUT_USER
                         )
                     }
                 } else {
@@ -191,15 +186,13 @@ class AvcEncoder(
                     }
                 }
             }
+            if (!isRunning) {
+                stopEncoder()
+            }
          }).start()
-
-//        val encoderThread = Thread(Runnable {
-//
-//        })
-//        encoderThread.start()
     }
 
-    private fun NV21ToNV12(nv21: ByteArray, nv12: ByteArray, width: Int, height: Int) {
+    private fun nv21ToNV12(nv21: ByteArray, nv12: ByteArray, width: Int, height: Int) {
         val frameSize = width * height
         System.arraycopy(nv21, 0, nv12, 0, frameSize)
         for (i in 0 until frameSize) nv12[i] = nv21[i]
@@ -207,11 +200,10 @@ class AvcEncoder(
         for (i in 0 until frameSize / 2 step 2) nv12[frameSize + i] = nv21[i + frameSize - 1]
     }
 
-    private fun YV12toNV12(yv12bytes: ByteArray, nv12bytes: ByteArray, width: Int, height: Int) {
+    private fun yv12toNV12(yv12bytes: ByteArray, nv12bytes: ByteArray, width: Int, height: Int) {
 
         val nLenY = width * height
         val nLenU = nLenY / 4
-
 
         System.arraycopy(yv12bytes, 0, nv12bytes, 0, width * height)
         for (i in 0 until nLenU) {
