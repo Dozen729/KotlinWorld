@@ -44,7 +44,7 @@ class Constant {
                             i,
                             NameTip.SHARES.name,
                             size,
-                            Color.GREEN,
+                            Color.RED,
                             "com.dozen.world.face.SharesActivity",
                             "股票测试"
                         )
@@ -55,7 +55,7 @@ class Constant {
                             i,
                             "FFmpeg",
                             size,
-                            Color.RED,
+                            Color.MAGENTA,
                             "com.dozen.world.face.DemoActivity",
                             "SurfaceView显示图片," +
                                     "AudioRecord录制音频,AudioTrack播放音频," +
