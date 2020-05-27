@@ -98,7 +98,7 @@ class Camera2Preview: TextureView {
         // Create the storage directory if it does not exist
         if (outputMediaFile.exists()) {
             outputMediaFile.delete()
-            if (!outputMediaFile.mkdirs()) {
+            if (!outputMediaFile.createNewFile()) {
                 Log.d(TAG, "failed to create directory")
                 return
             }
