@@ -8,5 +8,5 @@ package com.dozen.world
  *
  */
 enum class NameTip {
-    KOTLIN,FFMPEG,TEST2,SHARES
+    KOTLIN,FFMPEG,TEST2,SHARES,NET
 }

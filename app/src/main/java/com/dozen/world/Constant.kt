@@ -21,6 +21,7 @@ class Constant {
             tipList.add(NameTip.FFMPEG.name)
             tipList.add(NameTip.TEST2.name)
             tipList.add(NameTip.SHARES.name)
+            tipList.add((NameTip.NET.name))
 
             //扇形大小均分
             val size = 1f
@@ -62,6 +63,17 @@ class Constant {
                                     "SurfaceView,TextureView显示相机," +
                                     "MediaExtractor,MediaMuxer合并或拆分音视频," +
                                     "OpenGL画图形,显示图片"
+                        )
+                        dataList.add(item)
+                    }
+                    NameTip.NET.name -> {
+                        val item = RoundItem(
+                            i,
+                            "Socket",
+                            size,
+                            Color.GRAY,
+                            "com.dozen.world.face.NetActivity",
+                            "Socket测试"
                         )
                         dataList.add(item)
                     }
